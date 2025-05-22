@@ -8,11 +8,14 @@ import (
 )
 
 func main() {
-	res := data.GetWaitTimes()
-	for _, liveDataEntry := range res.LiveData {
-		standby := liveDataEntry.Queue.StandbyData
-		if liveDataEntry.Type == data.EntityTypeHotel {
-			fmt.Println(liveDataEntry.Name + " " + strconv.Itoa(standby.WaitTime))
-		}
+	waitTimesMap := data.GetWaitTimes()
+	for name, wait := range waitTimesMap {
+		fmt.Printf("%s %s\n", name, strconv.Itoa(wait))
 	}
+
+	// bytes, err := json.Marshal(waitTimesData)
+	// if err != nil {
+	// 	log.Fatal(err.Error())
+	// }
+	// fullLiveData := string(bytes)
 }

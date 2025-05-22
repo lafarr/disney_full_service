@@ -211,7 +211,7 @@ const destinationsURL = "https://api.themeparks.wiki/v1/destinations"
 const waitTimesURLFormat = "https://api.themeparks.wiki/v1/entity/%s/live"
 
 // GetWDWDestination the data for the WDW destination from https://api.themeparks.wiki/v1/destinations
-// It returns the respone from @url@ as type data.Destination
+// Returns the respone from @url@ as type data.Destination
 func GetWDWDestination() Destination {
 	res := GetData[DestinationsResponse](destinationsURL)
 
@@ -227,7 +227,16 @@ func GetWDWDestination() Destination {
 }
 
 // GetWaitTimes gets the wait times for all entities within a destination
-func GetWaitTimes() EntityLiveDataResponse {
+// Returns a map[@name@]@wait time@
+func GetWaitTimes() map[string]int {
 	wdwID := (GetWDWDestination()).ID
-	return GetData[EntityLiveDataResponse](fmt.Sprintf(waitTimesURLFormat, wdwID))
+	liveData := GetData[EntityLiveDataResponse](fmt.Sprintf(waitTimesURLFormat, wdwID))
+	waitTimes := map[string]int{}
+	for _, liveDataEntry := range liveData.LiveData {
+		standby := liveDataEntry.Queue.StandbyData
+		if standby.WaitTime != 0 {
+			waitTimes[liveDataEntry.Name] = standby.WaitTime
+		}
+	}
+	return waitTimes
 }
